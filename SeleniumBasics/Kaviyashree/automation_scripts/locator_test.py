@@ -1,0 +1,189 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
+from webdriver_manager.chrome import ChromeDriverManager
+import time
+
+
+driver = webdriver.Chrome(
+    service=Service(ChromeDriverManager().install())
+)
+
+wait = WebDriverWait(driver, 10)
+
+try:
+    driver.get("https://www.lambdatest.com/selenium-playground/simple-form-demo")
+
+    print("===== TASK 1: LOCATOR STRATEGIES =====")
+
+    # By.ID
+    element_id = driver.find_element(By.ID, "user-message")
+    print("By.ID works")
+
+    # By.NAME
+    element_name = driver.find_element(By.NAME, "message")
+    print("By.NAME works")
+
+    # By.CLASS_NAME
+    element_class = driver.find_element(By.CLASS_NAME, "form-control")
+    print("By.CLASS_NAME works")
+
+    # By.TAG_NAME
+    element_tag = driver.find_element(By.TAG_NAME, "input")
+    print("By.TAG_NAME works")
+
+    # Absolute XPath
+    try:
+        element_abs_xpath = driver.find_element(
+            By.XPATH,
+            "/html/body/div[1]/section[2]/div/div/div[1]/div/div[2]/div/input"
+        )
+        print("Absolute XPath works")
+    except:
+        print("Absolute XPath may change depending on page structure")
+
+    # Relative XPath
+    element_rel_xpath = driver.find_element(
+        By.XPATH,
+        "//input[@id='user-message']"
+    )
+    print("Relative XPath works")
+
+    print("\n===== CSS SELECTORS =====")
+
+    # CSS by ID
+    driver.find_element(By.CSS_SELECTOR, "#user-message")
+    print("CSS #id works")
+
+    # CSS by attribute
+    driver.find_element(By.CSS_SELECTOR, "input[name='message']")
+    print("CSS attribute works")
+
+    # CSS parent-child
+    driver.find_element(
+        By.CSS_SELECTOR,
+        "div.input-group > input"
+    )
+    print("CSS parent-child works")
+
+    print("\n===== CHECKBOX DEMO =====")
+
+    driver.get(
+        "https://www.lambdatest.com/selenium-playground/checkbox-demo"
+    )
+
+    # XPath text()
+    option1 = driver.find_element(
+        By.XPATH,
+        "//label[text()='Option 1']"
+    )
+    print("XPath text():", option1.text)
+
+    # XPath contains()
+    options = driver.find_elements(
+        By.XPATH,
+        "//label[contains(text(),'Option')]"
+    )
+
+    print("Labels found using contains():")
+    for option in options:
+        print(option.text)
+
+    # Ranking of locator strategies:
+    #
+    # 1. ID
+    # 2. Name
+    # 3. CSS Selector
+    # 4. Class Name
+    # 5. Relative XPath
+    # 6. Absolute XPath
+    #
+    # ID is fastest and unique.
+    # Absolute XPath is least preferred because
+    # small HTML changes can break the locator.
+
+    print("\n===== TASK 2: EXPLICIT WAITS =====")
+
+    driver.get(
+        "https://www.lambdatest.com/selenium-playground/bootstrap-alert-messages-demo"
+    )
+
+    # Using time.sleep()
+    start_sleep = time.time()
+
+    button = driver.find_element(By.ID, "autoclosable-btn-success")
+    button.click()
+
+    time.sleep(3)
+
+    alert_text = driver.find_element(
+        By.CSS_SELECTOR,
+        ".alert-autocloseable-success"
+    ).text
+
+    end_sleep = time.time()
+
+    print("\nUsing time.sleep():")
+    print("Alert:", alert_text)
+    print("Time:", round(end_sleep - start_sleep, 2), "seconds")
+
+    # Refresh page
+    driver.refresh()
+
+    # Using Explicit Wait
+    start_wait = time.time()
+
+    clickable_button = wait.until(
+        EC.element_to_be_clickable(
+            (By.ID, "autoclosable-btn-success")
+        )
+    )
+
+    clickable_button.click()
+
+    alert = wait.until(
+        EC.visibility_of_element_located(
+            (By.CSS_SELECTOR, ".alert-autocloseable-success")
+        )
+    )
+
+    assert "successfully" in alert.text.lower()
+
+    end_wait = time.time()
+
+    print("\nUsing Explicit Wait:")
+    print("Alert:", alert.text)
+    print("Time:", round(end_wait - start_wait, 2), "seconds")
+
+    # visibility_of_element_located:
+    # Element is present and visible.
+    #
+    # element_to_be_clickable:
+    # Element is visible, enabled,
+    # and can actually be clicked.
+
+    print("\n===== FLUENT WAIT =====")
+
+    driver.get(
+        "https://www.lambdatest.com/selenium-playground/table-sort-search-demo"
+    )
+
+    fluent_wait = WebDriverWait(
+        driver,
+        timeout=10,
+        poll_frequency=0.5,
+        ignored_exceptions=[NoSuchElementException]
+    )
+
+    row = fluent_wait.until(
+        lambda d: d.find_element(By.CSS_SELECTOR, "tbody tr")
+    )
+
+    print("First row found:")
+    print(row.text)
+
+finally:
+    driver.quit()
