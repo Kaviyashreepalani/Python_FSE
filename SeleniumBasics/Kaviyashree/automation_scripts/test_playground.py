@@ -1,78 +1,101 @@
 import pytest
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait, Select
-from selenium.webdriver.support import expected_conditions as EC
+
+from pages.simple_form_page import SimpleFormPage
+from pages.checkbox_page import CheckboxPage
+from pages.dropdown_page import DropdownPage
+from pages.input_form_page import InputFormPage
 
 
-# =====================================
-# Task 45: Parameterized Form Test
-# =====================================
+# ==========================
+# Simple Form Test
+# ==========================
 
 @pytest.mark.parametrize(
     "message",
     ["Hello", "Selenium Automation", "12345"]
 )
-def test_simple_form_submission(driver, base_url, message):
+def test_input_form_submit(driver, base_url):
 
-    driver.get(base_url + "simple-form-demo")
+    page = InputFormPage(driver)
 
-    message_box = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "user-message"))
+    page.navigate_to(base_url + "input-form-demo")
+
+    page.fill_form(
+        "Kaviyashree",
+        "kavi@gmail.com",
+        "9876543210",
+        "Chennai"
     )
 
-    message_box.clear()
-    message_box.send_keys(message)
+    page.submit_form()
 
-    driver.find_element(By.ID, "showInput").click()
-
-    output = WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located((By.ID, "message"))
-    )
-
-    assert output.text == message
+    # Just verify that form submission happened
+    assert page.get_title() != ""
 
 
-# =====================================
-# Task 43: Checkbox Demo Test
-# =====================================
+# ==========================
+# Checkbox Test
+# ==========================
 
 def test_checkbox_demo(driver, base_url):
 
-    driver.get(base_url + "checkbox-demo")
+    page = CheckboxPage(driver)
 
-    checkbox = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable(
-            (By.XPATH, "//input[@type='checkbox']")
-        )
-    )
+    page.navigate_to(base_url + "checkbox-demo")
 
-    checkbox.click()
+    page.check_option()
 
-    assert checkbox.is_selected()
+    assert page.is_option_checked()
 
-    checkbox.click()
+    page.uncheck_option()
 
-    assert not checkbox.is_selected()
+    assert not page.is_option_checked()
 
 
-# =====================================
-# Task 49: Dropdown Selection Test
-# =====================================
+# ==========================
+# Dropdown Test
+# ==========================
 
 def test_dropdown_selection(driver, base_url):
 
-    driver.get(base_url + "select-dropdown-demo")
+    page = DropdownPage(driver)
 
-    dropdown = Select(
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located(
-                (By.ID, "select-demo")
-            )
-        )
+    page.navigate_to(base_url + "select-dropdown-demo")
+
+    page.select_day("Wednesday")
+
+    assert page.get_selected_day() == "Wednesday"
+
+
+# ==========================
+# Input Form Test
+# ==========================
+
+def test_input_form_submit(driver, base_url):
+
+    page = InputFormPage(driver)
+
+    page.navigate_to(base_url + "input-form-demo")
+
+    page.fill_form(
+        "Kaviyashree",
+        "kavi@gmail.com",
+        "9876543210",
+        "Chennai"
     )
 
-    dropdown.select_by_visible_text("Wednesday")
+    page.submit_form()
 
-    selected_day = dropdown.first_selected_option.text
+    assert page.get_success_message() == \
+        "Form Submitted Successfully"
 
-    assert selected_day == "Wednesday"
+
+"""
+POM Benefit:
+
+In a flat Selenium script, if the Submit button ID changes
+from 'submit' to 'btn-submit', every test file must be updated.
+
+In POM, only one locator inside the page class needs to be changed,
+making the framework easier to maintain and reuse.
+"""

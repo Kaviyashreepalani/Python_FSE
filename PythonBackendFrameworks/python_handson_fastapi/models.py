@@ -1,23 +1,9 @@
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Column, Integer, String, Boolean
+from database import Base
+class User(Base):
+    __tablename__ = "users"
 
-
-class Base(DeclarativeBase):
-    pass
-
-
-class Course(Base):
-
-    __tablename__ = "courses"
-
-    id: Mapped[int] = mapped_column(
-        primary_key=True
-    )
-
-    name: Mapped[str]
-
-    code: Mapped[str]
-
-    credits: Mapped[int]
-
-    department_id: Mapped[int]
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
+    is_active = Column(Boolean, default=True)

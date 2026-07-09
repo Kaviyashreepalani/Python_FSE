@@ -1,122 +1,229 @@
-from typing import Optional, List
+from datetime import datetime, timedelta
 
-from fastapi import (
-    FastAPI,
-    Depends,
-    HTTPException,
-    status,
-    BackgroundTasks
-)
+from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+from sqlalchemy.orm import Session
 
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from database import get_db
-from models import Course, Student, Enrollment
+from database import SessionLocal
+from models import Course, User
 from schemas import (
     CourseCreate,
-    CourseUpdate,
     CourseResponse,
-    EnrollmentCreate
+    UserCreate,
+    UserResponse,
+    LoginRequest,
+    Token,
+)
+from security import (
+    get_password_hash,
+    verify_password,
+    create_access_token,
+    SECRET_KEY,
+    ALGORITHM,
+)
+
+app = FastAPI()
+
+# CORS configuration
+# CORS allows browser requests only from trusted origins.
+# Here we allow our frontend running on localhost:3000.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
-app = FastAPI(
-    title="Course Management API",
-    description="FastAPI application for managing courses, students, and enrollments",
-    version="1.0",
-    contact={
-        "name": "Kaviya Shree",
-        "email": "24f1000772@ds.study.iitm.ac.in"
-    }
+# Database dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="/api/v1/auth/login/"
 )
 
 
-def send_confirmation_email(student_email: str):
-    print(f"Sending confirmation to {student_email}")
+# OAuth2 Authorization Code Flow:
+# In OAuth2, users authenticate through providers like
+# Google, GitHub, or Microsoft. The provider returns an
+# authorization code, which is exchanged for an access token.
+#
+# In our implementation, users directly send their email
+# and password to the API, which generates a JWT token.
+# This is simpler than the full OAuth2 authorization flow.
 
 
-@app.get("/", tags=["Home"])
-async def root():
-    return {
-        "message": "API running"
-    }
+def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid or expired token"
+    )
+
+    try:
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        email = payload.get("sub")
+
+        if email is None:
+            raise credentials_exception
+
+    except JWTError:
+        raise credentials_exception
+
+    user = db.query(User).filter(
+        User.email == email
+    ).first()
+
+    if user is None:
+        raise credentials_exception
+
+    return user
 
 
-# -------------------- COURSES --------------------
+# ==========================
+# AUTHENTICATION ENDPOINTS
+# ==========================
 
 @app.post(
-    "/api/courses/",
-    response_model=CourseResponse,
-    status_code=status.HTTP_201_CREATED,
-    tags=["Courses"],
-    summary="Create a new course",
-    response_description="Created course details"
+    "/api/v1/auth/register/",
+    response_model=UserResponse
 )
-async def create_course(
+def register_user(
+    user: UserCreate,
+    db: Session = Depends(get_db)
+):
+
+    existing_user = db.query(User).filter(
+        User.email == user.email
+    ).first()
+
+    if existing_user:
+        raise HTTPException(
+            status_code=409,
+            detail="Email already registered"
+        )
+
+    hashed_password = get_password_hash(
+        user.password
+    )
+
+    new_user = User(
+        email=user.email,
+        hashed_password=hashed_password
+    )
+
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return new_user
+
+
+@app.post(
+    "/api/v1/auth/login/",
+    response_model=Token
+)
+def login_user(
+    user: LoginRequest,
+    db: Session = Depends(get_db)
+):
+
+    db_user = db.query(User).filter(
+        User.email == user.email
+    ).first()
+
+    if not db_user:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid email or password"
+        )
+
+    if not verify_password(
+        user.password,
+        db_user.hashed_password
+    ):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid email or password"
+        )
+
+    access_token = create_access_token(
+        data={"sub": db_user.email}
+    )
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
+
+
+# ==========================
+# COURSE ENDPOINTS
+# ==========================
+
+# Public endpoint
+@app.get(
+    "/api/v1/courses/",
+    response_model=list[CourseResponse]
+)
+def get_courses(
+    db: Session = Depends(get_db)
+):
+
+    return db.query(Course).all()
+
+
+# Protected endpoint
+@app.post(
+    "/api/v1/courses/",
+    response_model=CourseResponse
+)
+def create_course(
     course: CourseCreate,
-    db: AsyncSession = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
 
     new_course = Course(
-        name=course.name,
-        code=course.code,
-        credits=course.credits,
-        department_id=course.department_id
+        title=course.title,
+        description=course.description
     )
 
     db.add(new_course)
-
-    await db.commit()
-
-    await db.refresh(new_course)
+    db.commit()
+    db.refresh(new_course)
 
     return new_course
 
 
 @app.get(
-    "/api/courses/",
-    response_model=List[CourseResponse],
-    tags=["Courses"]
+    "/api/v1/courses/{course_id}",
+    response_model=CourseResponse
 )
-async def get_courses(
-    skip: int = 0,
-    limit: int = 10,
-    department_id: Optional[int] = None,
-    db: AsyncSession = Depends(get_db)
+def get_course(
+    course_id: int,
+    db: Session = Depends(get_db)
 ):
 
-    query = select(Course)
-
-    if department_id:
-        query = query.where(
-            Course.department_id == department_id
-        )
-
-    query = query.offset(skip).limit(limit)
-
-    result = await db.execute(query)
-
-    courses = result.scalars().all()
-
-    return courses
-
-
-@app.get(
-    "/api/courses/{id}",
-    response_model=CourseResponse,
-    tags=["Courses"]
-)
-async def get_course(
-    id: int,
-    db: AsyncSession = Depends(get_db)
-):
-
-    result = await db.execute(
-        select(Course).where(Course.id == id)
-    )
-
-    course = result.scalar_one_or_none()
+    course = db.query(Course).filter(
+        Course.id == course_id
+    ).first()
 
     if not course:
         raise HTTPException(
@@ -127,22 +234,17 @@ async def get_course(
     return course
 
 
-@app.put(
-    "/api/courses/{id}",
-    response_model=CourseResponse,
-    tags=["Courses"]
-)
-async def update_course(
-    id: int,
-    course_update: CourseUpdate,
-    db: AsyncSession = Depends(get_db)
+# Protected endpoint
+@app.delete("/api/v1/courses/{course_id}")
+def delete_course(
+    course_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
 
-    result = await db.execute(
-        select(Course).where(Course.id == id)
-    )
-
-    course = result.scalar_one_or_none()
+    course = db.query(Course).filter(
+        Course.id == course_id
+    ).first()
 
     if not course:
         raise HTTPException(
@@ -150,105 +252,9 @@ async def update_course(
             detail="Course not found"
         )
 
-    if course_update.name is not None:
-        course.name = course_update.name
-
-    if course_update.code is not None:
-        course.code = course_update.code
-
-    if course_update.credits is not None:
-        course.credits = course_update.credits
-
-    if course_update.department_id is not None:
-        course.department_id = course_update.department_id
-
-    await db.commit()
-
-    await db.refresh(course)
-
-    return course
-
-
-@app.delete(
-    "/api/courses/{id}",
-    status_code=status.HTTP_204_NO_CONTENT,
-    tags=["Courses"]
-)
-async def delete_course(
-    id: int,
-    db: AsyncSession = Depends(get_db)
-):
-
-    result = await db.execute(
-        select(Course).where(Course.id == id)
-    )
-
-    course = result.scalar_one_or_none()
-
-    if not course:
-        raise HTTPException(
-            status_code=404,
-            detail="Course not found"
-        )
-
-    await db.delete(course)
-
-    await db.commit()
-
-
-@app.get(
-    "/api/courses/{id}/students",
-    tags=["Courses"]
-)
-async def get_course_students(
-    id: int,
-    db: AsyncSession = Depends(get_db)
-):
-
-    result = await db.execute(
-        select(Student)
-        .join(Enrollment)
-        .where(Enrollment.course_id == id)
-    )
-
-    students = result.scalars().all()
-
-    return students
-
-
-# -------------------- ENROLLMENTS --------------------
-
-@app.post(
-    "/api/enrollments/",
-    status_code=status.HTTP_201_CREATED,
-    tags=["Enrollments"]
-)
-async def create_enrollment(
-    enrollment: EnrollmentCreate,
-    background_tasks: BackgroundTasks,
-    db: AsyncSession = Depends(get_db)
-):
-
-    new_enrollment = Enrollment(
-        student_id=enrollment.student_id,
-        course_id=enrollment.course_id
-    )
-
-    db.add(new_enrollment)
-
-    await db.commit()
-
-    student = await db.get(
-        Student,
-        enrollment.student_id
-    )
-
-    if student:
-        background_tasks.add_task(
-            send_confirmation_email,
-            student.email
-        )
+    db.delete(course)
+    db.commit()
 
     return {
-        "message": "Enrollment created successfully"
+        "message": "Course deleted successfully"
     }

@@ -1,40 +1,25 @@
-from pydantic import BaseModel
-from typing import Optional, List
+from pydantic import BaseModel, EmailStr
 
 
-class CourseCreate(BaseModel):
-    name: str
-    code: str
-    credits: int
-    department_id: int
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
 
 
-class CourseUpdate(BaseModel):
-    name: Optional[str] = None
-    code: Optional[str] = None
-    credits: Optional[int] = None
-    department_id: Optional[int] = None
-
-
-class CourseResponse(BaseModel):
+class UserResponse(BaseModel):
     id: int
-    name: str
-    code: str
-    credits: int
-    department_id: int
+    email: str
+    is_active: bool
 
     class Config:
         from_attributes = True
 
 
-class DepartmentResponse(BaseModel):
-    id: int
-    name: str
-    courses: List[CourseResponse] = []
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
 
-    class Config:
-        from_attributes = True
 
-class EnrollmentCreate(BaseModel):
-    student_id: int
-    course_id: int
+class Token(BaseModel):
+    access_token: str
+    token_type: str
