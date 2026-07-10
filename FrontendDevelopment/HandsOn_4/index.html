@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Student Portal</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+
+        Student Portal
+
+    </div>
+
+    <nav>
+
+        <ul>
+
+            <li><a href="#">Home</a></li>
+
+            <li><a href="#">Courses</a></li>
+
+            <li><a href="#">Profile</a></li>
+
+            <li><a href="#">Notifications</a></li>
+
+        </ul>
+
+    </nav>
+
+</header>
+
+
+<!-- Hero -->
+
+<section class="hero">
+
+    <h1>
+
+        Welcome to the Student Portal
+
+    </h1>
+
+    <p>
+
+        Learn, Grow and Track Your Academic Progress.
+
+    </p>
+
+</section>
+
+
+<!-- Course Section -->
+
+<section class="courses">
+
+    <h2>
+
+        Available Courses
+
+    </h2>
+
+    <div id="loadingCourses">
+
+        Loading Courses...
+
+    </div>
+
+    <div class="course-grid">
+
+    </div>
+
+</section>
+
+
+<!-- Notification Section -->
+
+<section id="notifications">
+
+    <h2>
+
+        Latest Notifications
+
+    </h2>
+
+    <div id="loading">
+
+        Loading Notifications...
+
+    </div>
+
+    <div id="notification-list">
+
+    </div>
+
+    <div id="errorMessage">
+
+    </div>
+
+    <button id="retryBtn">
+
+        Retry
+
+    </button>
+
+</section>
+
+
+<footer>
+
+    © 2026 Student Portal
+
+</footer>
+
+
+<!-- Axios CDN -->
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script src="app.js"></script>
+
+</body>
+
+</html>
