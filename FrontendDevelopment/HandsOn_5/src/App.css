@@ -1,0 +1,309 @@
+/* Header */
+
+.header{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:20px 8%;
+
+background:#4E342E;
+
+color:white;
+
+}
+
+.header nav{
+
+display:flex;
+
+gap:25px;
+
+align-items:center;
+
+}
+
+.header nav a{
+
+text-decoration:none;
+
+color:white;
+
+font-weight:600;
+
+}
+
+.count{
+
+background:#795548;
+
+padding:8px 14px;
+
+border-radius:20px;
+
+}
+
+/* Hero */
+
+.hero{
+
+text-align:center;
+
+padding:80px 20px;
+
+background:#FFF8F0;
+
+}
+
+.hero h1{
+
+font-size:48px;
+
+margin-bottom:10px;
+
+}
+
+.hero p{
+
+font-size:18px;
+
+color:#6D4C41;
+
+}
+
+/* Search */
+
+.search-section{
+
+padding:40px;
+
+text-align:center;
+
+}
+
+.search-section input{
+
+width:400px;
+
+max-width:90%;
+
+padding:14px;
+
+border:1px solid #ccc;
+
+border-radius:10px;
+
+font-size:16px;
+
+}
+
+/* Courses */
+
+.course-section{
+
+padding:40px 8%;
+
+}
+
+.course-section h2{
+
+text-align:center;
+
+margin-bottom:40px;
+
+}
+
+.course-grid{
+
+display:grid;
+
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+
+gap:25px;
+
+}
+
+/* Card */
+
+.card{
+
+background:white;
+
+padding:25px;
+
+border-radius:15px;
+
+box-shadow:0 8px 18px rgba(0,0,0,.1);
+
+transition:.3s;
+
+}
+
+.card:hover{
+
+transform:translateY(-6px);
+
+}
+
+.card h2{
+
+margin-bottom:15px;
+
+color:#4E342E;
+
+}
+
+.card p{
+
+margin:10px 0;
+
+}
+
+.card button{
+
+margin-top:15px;
+
+padding:12px 25px;
+
+background:#6F4E37;
+
+color:white;
+
+border:none;
+
+border-radius:8px;
+
+cursor:pointer;
+
+transition:.3s;
+
+}
+
+.card button:hover{
+
+background:#4E342E;
+
+}
+
+/* Footer */
+
+footer{
+
+margin-top:60px;
+
+background:#4E342E;
+
+color:white;
+
+text-align:center;
+
+padding:20px;
+
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+.header{
+
+flex-direction:column;
+
+gap:20px;
+
+}
+
+.header nav{
+
+flex-direction:column;
+
+}
+
+.hero h1{
+
+font-size:34px;
+
+}
+
+}
+
+/* Student Profile */
+
+.profile{
+
+padding:50px 8%;
+
+background:#FFF8F0;
+
+}
+
+.profile h2{
+
+text-align:center;
+
+margin-bottom:30px;
+
+}
+
+.profile-form{
+
+display:flex;
+
+justify-content:center;
+
+gap:20px;
+
+flex-wrap:wrap;
+
+margin-bottom:30px;
+
+}
+
+.profile-form input{
+
+padding:12px;
+
+width:250px;
+
+border:1px solid #ccc;
+
+border-radius:8px;
+
+font-size:16px;
+
+}
+
+.profile-preview{
+
+max-width:600px;
+
+margin:auto;
+
+background:white;
+
+padding:25px;
+
+border-radius:12px;
+
+box-shadow:0 8px 18px rgba(0,0,0,.08);
+
+}
+
+.profile-preview p{
+
+margin:12px 0;
+
+}
+
+.error{
+
+text-align:center;
+
+color:red;
+
+margin-bottom:20px;
+
+}

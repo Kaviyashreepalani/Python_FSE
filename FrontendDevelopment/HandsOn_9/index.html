@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--
+    ===========================================================
+    HANDS-ON 9
+    Web Accessibility & Cross-Browser Compatibility
+
+    Initial Lighthouse Accessibility Score :
+    (Run Lighthouse and update the score)
+
+    Issues Found:
+    1. Missing form labels
+    2. Missing ARIA attributes
+    3. Missing keyboard accessibility
+    4. Missing search result announcements
+    5. Heading hierarchy improvements
+    6. Colour contrast verification required
+
+    Colour Contrast
+    Before :
+    (Fill after checking)
+
+    After :
+    (Fill after checking)
+
+    Browser Testing
+
+    Chrome :
+    Firefox :
+    Edge :
+    Safari :
+
+    CSS Feature Checked:
+    Flexbox Gap / CSS Grid
+    https://caniuse.com/
+
+    ===========================================================
+    -->
+
+    <title>Student Portal - Course Catalog</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+
+    <a href="#main-content" class="skip-link">
+        Skip to Main Content
+    </a>
+
+    <header>
+
+        <div class="logo">
+            <span class="logo__mark" aria-hidden="true">SP</span>
+            <div class="logo__text">
+                <span class="logo__word">Student Portal</span>
+                <span class="logo__tag">Course Catalog</span>
+            </div>
+        </div>
+
+        <nav aria-label="Main navigation">
+
+            <ul>
+
+                <li>
+                    <a href="#" aria-current="page">Home</a>
+                </li>
+
+                <li>
+                    <a href="#courses">Courses</a>
+                </li>
+
+                <li>
+                    <a href="#">Profile</a>
+                </li>
+
+                <li>
+                    <a href="#">Grades</a>
+                </li>
+
+            </ul>
+
+        </nav>
+
+    </header>
+
+    <main id="main-content">
+
+        <section id="hero">
+
+            <div class="hero__seal" aria-hidden="true">
+                <span>Est.<br>2026</span>
+            </div>
+
+            <span class="hero__eyebrow">Registrar's catalog</span>
+
+            <h1>Every course, <em>catalogued</em> and ready to search</h1>
+
+            <p>
+                Browse this term's offerings, check credit loads, and pull up full details for any class in seconds.
+            </p>
+
+        </section>
+
+        <section class="controls">
+
+            <h2>Search the catalog</h2>
+            <p class="controls__hint">Search by course name or course code, like "React" or "CS302".</p>
+
+            <label for="search-courses">Search courses</label>
+
+            <div class="search-field">
+                <i aria-hidden="true">&#128269;</i>
+                <input
+                    id="search-courses"
+                    type="text"
+                    placeholder="Search courses (React, Java...)"
+                    aria-describedby="results-status">
+            </div>
+
+            <p
+                id="results-status"
+                role="status"
+                aria-live="polite">
+
+                0 Courses Found
+
+            </p>
+
+        </section>
+
+        <section id="courses">
+
+            <div class="section-heading">
+                <span class="hero__eyebrow">Course catalog</span>
+                <h2>Available courses</h2>
+            </div>
+
+            <ul
+                class="course-grid"
+                aria-label="Course List">
+
+            </ul>
+
+            <dl class="stat-bar">
+                <div class="stat-pill">
+                    <dt>Total credits</dt>
+                    <dd id="total-credits">0</dd>
+                </div>
+            </dl>
+
+            <h3 class="transcript__title" style="margin-bottom:8px;">Selected course</h3>
+
+            <div
+                id="selected-course"
+                tabindex="0"
+                aria-live="polite">
+
+                <p class="transcript__empty">No course selected yet. Choose "View details" on any course above to see its full record here.</p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+
+        <p>
+
+            © 2026 Student Portal
+
+        </p>
+
+    </footer>
+
+    <!-- CSS Variables Ponyfill -->
+
+    <script src="https://cdn.jsdelivr.net/npm/css-vars-ponyfill@2"></script>
+
+    <script>
+
+        cssVars();
+
+    </script>
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>

@@ -178,31 +178,303 @@ async function loadCourses(){
 
 }
 
-loadCourses();
+// =======================================
+// DOM Elements
+// =======================================
 
-// ===============================
-// Task 49
-// Promise.all()
-// ===============================
+const notificationList = document.getElementById("notification-list");
+const loading = document.getElementById("loading");
+const errorMessage = document.getElementById("errorMessage");
+const retryBtn = document.getElementById("retryBtn");
 
-Promise.all([
+// =======================================
+// Task 50
+// Reusable Fetch Function
+// =======================================
 
-fetchUser(1),
+async function apiFetch(url){
 
-fetchUser(2)
+    const response = await fetch(url);
 
-])
+    if(!response.ok){
 
-.then(users=>{
+        throw new Error("Unable to load data. Please try again.");
+
+    }
+
+    return await response.json();
+
+}
+
+// =======================================
+// Task 51 & 52
+// Fetch Notifications
+// =======================================
+
+async function loadNotifications() {
+
+    loading.innerHTML = "<div class='spinner'></div><p>Loading Latest Notifications...</p>";
+
+    notificationList.innerHTML = "";
+
+    errorMessage.innerHTML = "";
+
+    retryBtn.style.display = "none";
+
+    try {
+
+        await apiFetch("https://jsonplaceholder.typicode.com/posts?_limit=6");
+
+        loading.style.display = "none";
+
+        const notifications = [
+
+            {
+                title: "Semester Examination Schedule Released",
+                body: "The Semester VI examination timetable has been published. Students are requested to check the examination schedule and prepare accordingly."
+            },
+
+            {
+                title: "Assignment Submission Reminder",
+                body: "Submit your Web Development assignment before 25 July 2026 through the Student Portal to avoid late submission penalties."
+            },
+
+            {
+                title: "Campus Recruitment Drive",
+                body: "Cognizant will conduct an on-campus recruitment drive next week. Eligible students should complete their registration."
+            },
+
+            {
+                title: "Workshop Registration Open",
+                body: "Registrations are now open for the Full Stack Development Workshop. Limited seats are available."
+            },
+
+            {
+                title: "Library Notice",
+                body: "The central library will remain open until 9:00 PM during examination week for all students."
+            },
+
+            {
+                title: "Scholarship Announcement",
+                body: "Applications for the Academic Excellence Scholarship are now open. Submit the required documents before the deadline."
+            }
+
+        ];
+
+        notifications.forEach(notification => {
+
+            const card = document.createElement("div");
+
+            card.className = "notification";
+
+            card.innerHTML = `
+
+                <div class="notification-header">
+
+                    <span class="badge">NEW</span>
+
+                    <span class="date">${new Date().toLocaleDateString()}</span>
+
+                </div>
+
+                <h3>${notification.title}</h3>
+
+                <p>${notification.body}</p>
+
+            `;
+
+            notificationList.appendChild(card);
+
+        });
+
+    }
+
+    catch (error) {
+
+        loading.style.display = "none";
+
+        errorMessage.textContent = error.message;
+
+        retryBtn.style.display = "block";
+
+    }
+
+}
+
+loadNotifications();
+
+
+// =======================================
+// Task 53
+// Simulate 404 Error
+// =======================================
+
+async function loadBadURL(){
+
+    try{
+
+        await apiFetch(
+            "https://jsonplaceholder.typicode.com/nonexistent"
+        );
+
+    }
+
+    catch(error){
+
+        console.log("404 Error Handled Successfully");
+
+    }
+
+}
+
+loadBadURL();
+
+
+// =======================================
+// Task 54
+// Retry Button
+// =======================================
+
+retryBtn.addEventListener("click",()=>{
+
+    loading.style.display="block";
+
+    loadNotifications();
+
+});
+
+
+// =======================================
+// Task 55
+// Axios CDN already added in index.html
+// =======================================
+
+
+// =======================================
+// Task 56
+// Axios Function
+// =======================================
+
+async function axiosFetch(url){
+
+    const response = await axios.get(url);
+
+    return response.data;
+
+}
+
+
+// =======================================
+// Task 57
+// Axios Params
+// =======================================
+
+async function userPosts(){
+
+    const posts = await axios.get(
+
+        "https://jsonplaceholder.typicode.com/posts",
+
+        {
+
+            params:{
+
+                userId:1
+
+            },
+
+            timeout:5000
+
+        }
+
+    );
+
+    console.log("User 1 Posts");
+
+    console.log(posts.data);
+
+}
+
+userPosts();
+
+
+// =======================================
+// Task 58
+// Axios Interceptor
+// =======================================
+
+axios.interceptors.request.use(config=>{
+
+    console.log(
+
+        "API Call Started :",
+
+        config.url
+
+    );
+
+    return config;
+
+});
+
+
+// =======================================
+// Example Axios Call
+// =======================================
+
+axiosFetch(
+
+"https://jsonplaceholder.typicode.com/users/1"
+
+)
+
+.then(data=>{
 
 console.log(
 
-"Promise.all Users :",
+"Axios User :",
 
-users[0].name,
-
-users[1].name
+data.name
 
 );
 
 });
+
+
+// =======================================
+// Task 59
+// Fetch vs Axios
+// =======================================
+
+/*
+
+FETCH vs AXIOS
+
+1.
+
+Fetch requires
+
+response.json()
+
+Axios automatically converts JSON.
+
+----------------------------
+
+2.
+
+Fetch does NOT throw
+errors for HTTP 404.
+
+Axios automatically throws
+errors for non-2xx responses.
+
+----------------------------
+
+3.
+
+Fetch has no timeout.
+
+Axios supports timeout,
+interceptors and request cancellation.
+
+*/

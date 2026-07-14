@@ -1,0 +1,1004 @@
+/* ==========================================================
+   HANDS-ON 9
+   Web Accessibility & Cross-Browser Compatibility
+
+   Contrast Improvements
+
+   Before:
+   (Update after checking with WebAIM)
+
+   After:
+   (Update after checking)
+
+   CSS Feature Tested:
+   Flexbox
+   CSS Grid
+
+========================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap");
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+
+    /* -- token system --------------------------------------- */
+    --ink:#17261b;
+    --ink-soft:#45564a;
+    --paper:#eef0e6;
+    --card:#fbfbf4;
+    --brass:#a97a2f;
+    --brass-deep:#7c591f;
+    --brass-light:#e3c07f;
+    --line:#d7ddc9;
+    --line-strong:#b9c2ab;
+    --focus:#1657cf;
+    --shadow:0 1px 2px rgba(23,38,27,.06),0 8px 20px rgba(23,38,27,.08);
+
+    --font-display:"Fraunces",Georgia,serif;
+    --font-body:"Inter",Arial,Helvetica,sans-serif;
+    --font-mono:"IBM Plex Mono",Consolas,monospace;
+
+}
+
+body{
+
+    font-family:var(--font-body);
+
+    background:var(--paper);
+
+    background-image:
+        radial-gradient(circle at 1px 1px, rgba(23,38,27,.06) 1px, transparent 0);
+    background-size:22px 22px;
+
+    color:var(--ink);
+
+    line-height:1.6;
+
+    -webkit-font-smoothing:antialiased;
+
+}
+
+/* Skip Link */
+
+.skip-link{
+
+    position:absolute;
+
+    left:-9999px;
+
+    top:auto;
+
+    background:var(--ink);
+
+    color:var(--paper);
+
+    padding:12px 20px;
+
+    border-radius:6px;
+
+    font-weight:600;
+
+    z-index:999;
+
+}
+
+.skip-link:focus{
+
+    left:15px;
+
+    top:15px;
+
+}
+
+/* Global focus treatment */
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+.course-card__action:focus-visible,
+.course-card:focus-visible{
+
+    outline:3px solid var(--focus);
+
+    outline-offset:3px;
+
+    border-radius:4px;
+
+}
+
+/* Header */
+
+header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:20px;
+
+    background:var(--ink);
+
+    color:var(--paper);
+
+    padding:18px 40px;
+
+    border-bottom:3px solid var(--brass);
+
+}
+
+.logo{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+}
+
+.logo__mark{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    width:42px;
+
+    height:42px;
+
+    border-radius:50%;
+
+    border:2px solid var(--brass-light);
+
+    color:var(--brass-light);
+
+    font-family:var(--font-display);
+
+    font-weight:600;
+
+    font-size:15px;
+
+    letter-spacing:.03em;
+
+    flex-shrink:0;
+
+}
+
+.logo__text{
+
+    display:flex;
+
+    flex-direction:column;
+
+    line-height:1.2;
+
+}
+
+.logo__word{
+
+    font-family:var(--font-display);
+
+    font-size:20px;
+
+    font-weight:600;
+
+    color:var(--paper);
+
+}
+
+.logo__tag{
+
+    font-family:var(--font-mono);
+
+    font-size:11px;
+
+    letter-spacing:.12em;
+
+    text-transform:uppercase;
+
+    color:var(--brass-light);
+
+}
+
+nav ul{
+
+    display:flex;
+
+    list-style:none;
+
+    gap:8px;
+
+    flex-wrap:wrap;
+
+}
+
+nav a{
+
+    color:var(--paper);
+
+    text-decoration:none;
+
+    font-weight:600;
+
+    font-size:15px;
+
+    padding:8px 14px;
+
+    border-radius:6px;
+
+}
+
+nav a:hover{
+
+    background:rgba(255,255,255,.1);
+
+}
+
+nav a[aria-current="page"]{
+
+    color:var(--brass-light);
+
+    background:rgba(255,255,255,.06);
+
+}
+
+/* Hero */
+
+#hero{
+
+    position:relative;
+
+    padding:72px 24px 56px;
+
+    text-align:center;
+
+    overflow:hidden;
+
+}
+
+.hero__eyebrow{
+
+    display:inline-block;
+
+    font-family:var(--font-mono);
+
+    font-size:12px;
+
+    letter-spacing:.18em;
+
+    text-transform:uppercase;
+
+    color:var(--brass-deep);
+
+    background:rgba(169,122,47,.1);
+
+    border:1px solid rgba(169,122,47,.35);
+
+    padding:6px 14px;
+
+    border-radius:999px;
+
+    margin-bottom:22px;
+
+}
+
+#hero h1{
+
+    color:var(--ink);
+
+    font-family:var(--font-display);
+
+    font-weight:600;
+
+    font-size:clamp(32px,5vw,52px);
+
+    line-height:1.12;
+
+    max-width:16ch;
+
+    margin:0 auto 18px;
+
+}
+
+#hero h1 em{
+
+    font-style:italic;
+
+    color:var(--brass-deep);
+
+}
+
+#hero p{
+
+    font-size:18px;
+
+    color:var(--ink-soft);
+
+    max-width:46ch;
+
+    margin:0 auto;
+
+}
+
+.hero__seal{
+
+    position:absolute;
+
+    top:36px;
+
+    right:6%;
+
+    width:104px;
+
+    height:104px;
+
+    border:2px dashed var(--brass);
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    transform:rotate(-9deg);
+
+    opacity:.55;
+
+}
+
+.hero__seal span{
+
+    font-family:var(--font-mono);
+
+    font-size:11px;
+
+    letter-spacing:.1em;
+
+    text-transform:uppercase;
+
+    color:var(--brass-deep);
+
+    text-align:center;
+
+    line-height:1.5;
+
+}
+
+/* Controls */
+
+.controls{
+
+    width:92%;
+
+    max-width:900px;
+
+    margin:0 auto 48px;
+
+    background:var(--card);
+
+    border:1px solid var(--line);
+
+    border-radius:14px;
+
+    padding:28px 32px;
+
+    box-shadow:var(--shadow);
+
+}
+
+.controls h2{
+
+    font-family:var(--font-display);
+
+    font-weight:600;
+
+    font-size:22px;
+
+    margin-bottom:6px;
+
+}
+
+.controls__hint{
+
+    color:var(--ink-soft);
+
+    font-size:14px;
+
+    margin-bottom:18px;
+
+}
+
+label{
+
+    display:block;
+
+    margin-bottom:8px;
+
+    font-weight:600;
+
+    font-size:14px;
+
+}
+
+.search-field{
+
+    position:relative;
+
+}
+
+.search-field i{
+
+    position:absolute;
+
+    left:16px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    color:var(--ink-soft);
+
+    font-style:normal;
+
+    font-size:16px;
+
+    pointer-events:none;
+
+}
+
+input{
+
+    width:100%;
+
+    padding:14px 16px 14px 44px;
+
+    border:1px solid var(--line-strong);
+
+    border-radius:8px;
+
+    font-size:16px;
+
+    font-family:var(--font-body);
+
+    background:var(--paper);
+
+    color:var(--ink);
+
+}
+
+input::placeholder{
+
+    color:var(--ink-soft);
+
+    opacity:.8;
+
+}
+
+/* Results */
+
+#results-status{
+
+    margin-top:14px;
+
+    font-family:var(--font-mono);
+
+    font-size:13px;
+
+    letter-spacing:.03em;
+
+    color:var(--brass-deep);
+
+}
+
+/* Course Section */
+
+#courses{
+
+    width:92%;
+
+    max-width:1180px;
+
+    margin:0 auto 60px;
+
+}
+
+.section-heading{
+
+    text-align:center;
+
+    margin-bottom:34px;
+
+}
+
+.section-heading .hero__eyebrow{
+
+    margin-bottom:14px;
+
+}
+
+#courses h2{
+
+    font-family:var(--font-display);
+
+    font-weight:600;
+
+    font-size:30px;
+
+    color:var(--ink);
+
+}
+
+/* Grid */
+
+.course-grid{
+
+    list-style:none;
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+
+    gap:24px;
+
+}
+
+/* Card */
+
+.course-card{
+
+    position:relative;
+
+    background:var(--card);
+
+    border:1px solid var(--line);
+
+    border-radius:12px;
+
+    padding:26px 22px 22px;
+
+    box-shadow:var(--shadow);
+
+    transition:transform .2s ease, box-shadow .2s ease;
+
+}
+
+.course-card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:0 4px 8px rgba(23,38,27,.08),0 14px 26px rgba(23,38,27,.12);
+
+}
+
+.course-card:hover .course-card__stamp{
+
+    transform:rotate(0deg);
+
+}
+
+.course-card__stamp{
+
+    position:absolute;
+
+    top:-14px;
+
+    right:18px;
+
+    width:52px;
+
+    height:52px;
+
+    border-radius:50%;
+
+    background:var(--brass-deep);
+
+    color:var(--brass-light);
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    transform:rotate(9deg);
+
+    transition:transform .25s ease;
+
+    box-shadow:0 3px 8px rgba(23,38,27,.25);
+
+}
+
+.course-card__stamp strong{
+
+    font-family:var(--font-mono);
+
+    font-size:17px;
+
+    line-height:1;
+
+}
+
+.course-card__stamp small{
+
+    font-size:8px;
+
+    letter-spacing:.08em;
+
+    text-transform:uppercase;
+
+}
+
+.course-card__code{
+
+    font-family:var(--font-mono);
+
+    font-size:12px;
+
+    letter-spacing:.08em;
+
+    color:var(--brass-deep);
+
+    padding-bottom:10px;
+
+    margin-bottom:10px;
+
+    border-bottom:1px dashed var(--line-strong);
+
+}
+
+.course-card__title{
+
+    font-family:var(--font-display);
+
+    font-weight:600;
+
+    font-size:21px;
+
+    color:var(--ink);
+
+    margin-bottom:8px;
+
+    padding-right:40px;
+
+}
+
+.course-card__meta{
+
+    font-size:14px;
+
+    color:var(--ink-soft);
+
+    margin-bottom:18px;
+
+}
+
+.course-card__meta strong{
+
+    color:var(--ink);
+
+    font-weight:600;
+
+}
+
+.course-card__action{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    background:none;
+
+    border:none;
+
+    padding:0;
+
+    color:var(--brass-deep);
+
+    font-weight:600;
+
+    font-size:14px;
+
+    cursor:pointer;
+
+    font-family:var(--font-body);
+
+}
+
+.course-card__action:hover{
+
+    text-decoration:underline;
+
+}
+
+.course-card__action span{
+
+    transition:transform .15s ease;
+
+}
+
+.course-card__action:hover span{
+
+    transform:translateX(3px);
+
+}
+
+/* Empty state */
+
+.empty-state{
+
+    grid-column:1/-1;
+
+    text-align:center;
+
+    padding:48px 24px;
+
+    border:1px dashed var(--line-strong);
+
+    border-radius:12px;
+
+    color:var(--ink-soft);
+
+    font-size:15px;
+
+}
+
+.empty-state strong{
+
+    display:block;
+
+    font-family:var(--font-display);
+
+    font-size:19px;
+
+    color:var(--ink);
+
+    margin-bottom:6px;
+
+}
+
+/* Stat bar */
+
+.stat-bar{
+
+    display:flex;
+
+    gap:16px;
+
+    flex-wrap:wrap;
+
+    justify-content:center;
+
+    margin:34px 0;
+
+}
+
+.stat-pill{
+
+    background:var(--card);
+
+    border:1px solid var(--line);
+
+    border-radius:10px;
+
+    padding:14px 22px;
+
+    text-align:center;
+
+    min-width:150px;
+
+}
+
+.stat-pill dt{
+
+    font-family:var(--font-mono);
+
+    font-size:11px;
+
+    letter-spacing:.1em;
+
+    text-transform:uppercase;
+
+    color:var(--ink-soft);
+
+    margin-bottom:4px;
+
+}
+
+.stat-pill dd{
+
+    font-family:var(--font-display);
+
+    font-weight:600;
+
+    font-size:26px;
+
+    color:var(--brass-deep);
+
+}
+
+/* Selected Course / Transcript panel */
+
+#selected-course{
+
+    margin-top:12px;
+
+    padding:26px 28px;
+
+    background:var(--card);
+
+    border:1px solid var(--line);
+
+    border-top:4px solid var(--brass);
+
+    border-radius:0 0 12px 12px;
+
+}
+
+#selected-course .transcript__empty{
+
+    color:var(--ink-soft);
+
+    font-size:15px;
+
+}
+
+#selected-course h3.transcript__title{
+
+    font-family:var(--font-display);
+
+    font-weight:600;
+
+    font-size:22px;
+
+    color:var(--ink);
+
+    margin-bottom:14px;
+
+}
+
+#selected-course dl{
+
+    display:grid;
+
+    grid-template-columns:auto 1fr;
+
+    gap:8px 16px;
+
+    font-size:15px;
+
+}
+
+#selected-course dt{
+
+    font-weight:600;
+
+    color:var(--ink-soft);
+
+}
+
+#selected-course dd{
+
+    color:var(--ink);
+
+}
+
+/* Footer */
+
+footer{
+
+    margin-top:50px;
+
+    background:var(--ink);
+
+    color:var(--paper);
+
+    text-align:center;
+
+    padding:22px;
+
+    font-size:14px;
+
+    border-top:3px solid var(--brass);
+
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+header{
+
+    flex-direction:column;
+
+    gap:16px;
+
+    text-align:center;
+
+}
+
+nav ul{
+
+    justify-content:center;
+
+}
+
+.hero__seal{
+
+    display:none;
+
+}
+
+#hero{
+
+    padding:52px 20px 40px;
+
+}
+
+.controls{
+
+    padding:22px 20px;
+
+}
+
+}
+
+/* Feature Detection */
+
+@supports(display:grid){
+
+.course-grid{
+
+display:grid;
+
+}
+
+}
+
+@supports not(display:grid){
+
+.course-grid{
+
+display:flex;
+
+flex-wrap:wrap;
+
+gap:20px;
+
+}
+
+}
+
+/* Reduced motion */
+
+@media (prefers-reduced-motion:reduce){
+
+*{
+
+animation-duration:.001ms !important;
+
+transition-duration:.001ms !important;
+
+}
+
+.course-card:hover{
+
+transform:none;
+
+}
+
+}

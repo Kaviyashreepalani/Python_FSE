@@ -1,0 +1,93 @@
+<section class="hero">
+
+<h1>
+
+Student Portal
+
+</h1>
+
+<p>
+
+Browse and search courses
+
+</p>
+
+</section>
+
+<div class="search-box">
+
+<input
+
+type="text"
+
+placeholder="Search Courses..."
+
+[(ngModel)]="searchTerm"
+
+>
+
+</div>
+
+<div
+
+class="loading"
+
+*ngIf="loading"
+
+>
+
+Loading Courses...
+
+</div>
+
+<div
+
+*ngIf="!loading"
+
+>
+
+<h2 class="title">
+
+Available Courses
+
+</h2>
+
+<div
+
+class="grid"
+
+*ngIf="filteredCourses.length>0"
+
+>
+
+<app-course-card
+
+*ngFor="let course of filteredCourses"
+
+[name]="course.name"
+
+[code]="course.code"
+
+[credits]="course.credits"
+
+[grade]="course.grade"
+
+>
+
+</app-course-card>
+
+</div>
+
+<div
+
+class="empty"
+
+*ngIf="filteredCourses.length===0"
+
+>
+
+No Courses Found
+
+</div>
+
+</div>
